@@ -1,0 +1,35 @@
+{
+  "name": "custom-axios",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "scripts": {
+    "build": "bun build ./index.ts --outdir ./dist && tsc --emitDeclarationOnly --outDir ./dist --noEmit false",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "axios-mock-adapter": "^2.1.0",
+    "vitepress": "^1.6.4"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/opossum": "^8.1.9",
+    "axios": "^1.18.1",
+    "axios-cache-interceptor": "^1.12.1",
+    "axios-retry": "^4.5.0",
+    "opossum": "^10.0.0",
+    "uuid": "^14.0.1"
+  }
+}
