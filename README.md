@@ -12,7 +12,7 @@
 ## Установка
 
 ```bash
-bun add custom-axios
+bun add github:artiomkovalev/custom-axios
 ```
 
 ## Быстрый старт
