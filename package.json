@@ -9,7 +9,7 @@
   ],
   "type": "module",
   "scripts": {
-    "build": "bun build ./index.ts --outdir ./dist && tsc --emitDeclarationOnly --outDir ./dist --noEmit false",
+    "build": "bun build ./index.ts --outdir ./dist && tsc --declaration --emitDeclarationOnly --outDir ./dist --noEmit false",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "docs:dev": "vitepress dev docs",
