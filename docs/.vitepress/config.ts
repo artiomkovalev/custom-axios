@@ -32,9 +32,10 @@ export default defineConfig({
       {
         text: 'Инструкции',
         items: [
-          { text: 'Авторизация и Refresh Token', link: '/how-to/configure-auth-and-refresh' },
+          { text: 'Авторизация и обновление токенов', link: '/how-to/configure-auth-and-refresh' },
           { text: 'Обработка ошибок', link: '/how-to/handle-custom-errors' },
-          { text: 'Настройка Circuit Breaker', link: '/how-to/configure-circuit-breaker' }
+          { text: 'Настройка Circuit Breaker', link: '/how-to/configure-circuit-breaker' },
+          { text: 'Управление кэшированием', link: '/how-to/manage-cache' },
         ]
       },
       {

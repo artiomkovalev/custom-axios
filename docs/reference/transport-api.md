@@ -1,6 +1,6 @@
 # Класс TransportAPI
 
-Класс `TransportAPI` содержит методы выполнения HTTP-запросов.
+Класс `TransportAPI` содержит методы выполнения HTTP-запросов и управления состоянием.
 
 ## Конструктор
 
@@ -62,3 +62,34 @@ public request<TResponse, TData = unknown>(
 ): Promise<TResponse>
 ```
 Базовый метод отправки запросов. Вызывается внутри `get`, `post`, `put`, `patch` и `delete`.
+
+## Методы управления кэшем
+
+### `invalidateCacheByUrl`
+```typescript
+public invalidateCacheByUrl(url: string): Promise<void>
+```
+Удаляет из кэша все сохраненные ответы для указанного относительного URL.
+
+### `invalidateCacheByService`
+```typescript
+public invalidateCacheByService(serviceKey: string): Promise<void>
+```
+Очищает весь кэш, привязанный к указанному `serviceKey` (группе запросов).
+
+### `invalidateAllCache`
+```typescript
+public invalidateAllCache(): Promise<void>
+```
+Полностью очищает внутреннее хранилище кэша для данного экземпляра API.
+
+## ExtendedRequestConfig
+
+Расширяет стандартный `AxiosRequestConfig`:
+
+| Параметр | Тип | Описание |
+| :--- | :--- | :--- |
+| `serviceKey` | `string` | Идентификатор сервиса для группировки Circuit Breaker и кэша |
+| `skipBreaker` | `boolean` | Пропустить Circuit Breaker |
+| `skipCache` | `boolean` | Игнорировать кэш для текущего запроса |
+| `fallback` | `FallbackHandler` | Функция-фоллбэк при ошибке или открытом Breaker |

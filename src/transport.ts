@@ -1,5 +1,6 @@
 import type { ExtendedRequestConfig, TypedCircuitBreaker } from '@/types/request';
 import type { AxiosInstance } from 'axios';
+import type { AxiosCacheInstance, AxiosStorage } from 'axios-cache-interceptor';
 import type { ApiOptions } from '@/types/options';
 import { createAxiosInstance, defaultAxiosInstance } from '@/config/instance';
 import { DEFAULT_BREAKER_CONFIG } from '@/config/breaker';
@@ -8,6 +9,27 @@ import { NetworkError } from '@/errors/classifier';
 import { CircuitBreakerAdapter } from '@/adapter';
 import { defaultErrorTransformer } from '@/errors/transformer';
 import { isBrowser } from '@/utils/environment';
+
+interface StorageWithData extends AxiosStorage {
+  data: Record<string, unknown>;
+}
+
+interface ClearableStorage extends AxiosStorage {
+  clear: () => void | Promise<void>;
+}
+
+function isCacheInstance(client: AxiosInstance): client is AxiosCacheInstance {
+  return 'storage' in client;
+}
+
+function isStorageWithData(storage: AxiosStorage): storage is StorageWithData {
+  const data = Reflect.get(storage, 'data');
+  return typeof data === 'object' && data !== null;
+}
+
+function isClearableStorage(storage: AxiosStorage): storage is ClearableStorage {
+  return typeof Reflect.get(storage, 'clear') === 'function';
+}
 
 export class TransportAPI {
   private breakers = new Map<string, TypedCircuitBreaker>();
@@ -173,5 +195,51 @@ export class TransportAPI {
       method: 'DELETE',
       url
     });
+  }
+
+  public async invalidateCacheByUrl(url: string): Promise<void> {
+    if (!isCacheInstance(this.client)) return;
+    const storage = this.client.storage;
+
+    if (!isStorageWithData(storage)) return;
+
+    const keys = Object.keys(storage.data);
+    for (const key of keys) {
+      const parts = key.split('::');
+      if (parts.length >= 3 && parts[1] === url) {
+        await storage.remove(key);
+      }
+    }
+  }
+
+  public async invalidateCacheByService(serviceKey: string): Promise<void> {
+    if (!isCacheInstance(this.client)) return;
+    const storage = this.client.storage;
+
+    if (!isStorageWithData(storage)) return;
+
+    const keys = Object.keys(storage.data);
+    for (const key of keys) {
+      if (key.startsWith(`${serviceKey}::`)) {
+        await storage.remove(key);
+      }
+    }
+  }
+
+  public async invalidateAllCache(): Promise<void> {
+    if (!isCacheInstance(this.client)) return;
+    const storage = this.client.storage;
+
+    if (isClearableStorage(storage)) {
+      await storage.clear();
+      return;
+    }
+
+    if (isStorageWithData(storage)) {
+      const keys = Object.keys(storage.data);
+      for (const key of keys) {
+        await storage.remove(key);
+      }
+    }
   }
 }
