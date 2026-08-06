@@ -64,6 +64,7 @@ export function createAxiosInstance(options?: ApiOptions): AxiosInstance {
     return setupCache(instance, {
       ttl: config.cacheTTL,
       interpretHeader: true,
+      staleIfError: true,
       generateKey: (req) => {
         const hash = hashGenerator(req);
 
